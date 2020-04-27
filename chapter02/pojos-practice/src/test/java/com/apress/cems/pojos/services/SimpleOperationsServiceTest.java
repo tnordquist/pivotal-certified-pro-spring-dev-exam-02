@@ -27,26 +27,26 @@ SOFTWARE.
 */
 package com.apress.cems.pojos.services;
 
-import com.apress.cems.dao.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import com.apress.cems.dao.Evidence;
+import com.apress.cems.dao.Person;
+import com.apress.cems.dao.Storage;
 import com.apress.cems.util.CaseType;
 import com.apress.cems.util.Rank;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Iuliana Cosmina
  * @since 1.0
  */
-// comment the @Disabled annotation to run the test
-@Disabled
+
 public class SimpleOperationsServiceTest extends SimpleServiceTestBase {
     static final Long DETECTIVE_ID = 1L;
     static final String BADGE_NO = "NY112233";
@@ -64,8 +64,8 @@ public class SimpleOperationsServiceTest extends SimpleServiceTestBase {
         var detective = detectiveService.createDetective(person, Rank.INSPECTOR);
         assertNotNull(detective);
         detective.setBadgeNumber(BADGE_NO);
-        assertEquals(DETECTIVE_ID, detective.getId());
         detective.setBadgeNumber(BADGE_NO);
+        assertEquals(DETECTIVE_ID, detective.getId());
 
         // create storage entries
         var storage = new Storage();

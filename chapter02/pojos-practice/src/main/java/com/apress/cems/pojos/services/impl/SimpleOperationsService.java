@@ -38,6 +38,7 @@ import com.apress.cems.util.CaseStatus;
 import com.apress.cems.util.CaseType;
 import com.apress.cems.util.NumberGenerator;
 import com.apress.cems.util.Rank;
+import java.util.function.Consumer;
 import org.apache.commons.lang3.NotImplementedException;
 
 import java.time.LocalDateTime;
@@ -48,72 +49,106 @@ import java.util.*;
  * @since 1.0
  */
 public class SimpleOperationsService implements OperationsService {
-    private CriminalCaseRepo criminalCaseRepo;
-    private EvidenceRepo evidenceRepo;
-    private DetectiveRepo detectiveRepo;
-    private StorageRepo storageRepo;
 
-    @Override
-    public Detective createDetective(String firstName, String lastName, LocalDateTime hiringDate, Rank rank) {
-        throw new NotImplementedException("Not needed for this section.");
-    }
+  private CriminalCaseRepo criminalCaseRepo;
+  private EvidenceRepo evidenceRepo;
+  private DetectiveRepo detectiveRepo;
+  private StorageRepo storageRepo;
 
-    @Override
-    public CriminalCase createCriminalCase(CaseType caseType, String shortDescription, String badgeNo, Map<Evidence, String> evidenceMap) {
-        // get detective
-        // TODO 1. retrieve detective  (according to diagram 2.5)
+  @Override
+  public Detective createDetective(String firstName, String lastName, LocalDateTime hiringDate,
+      Rank rank) {
+    Person person = new Person();
+    person.setFirstName(firstName);
+    person.setLastName(lastName);
+    person.setHiringDate(hiringDate);
+    person.setPassword(NumberGenerator.getPassword());
 
-        // create a criminal case instance
-        CriminalCase criminalCase = new CriminalCase();
-        // TODO 2. set fields; use ifPresent(..) to set(or not) the leadDetective field
+    Detective detective = new Detective();
+    detective.setPerson(person);
+    detective.setBadgeNumber(NumberGenerator.getBadgeNumber());
+    detective.setRank(rank);
+    detectiveRepo.save(detective);
+    return detective;
+  }
 
-        evidenceMap.forEach((ev, storageName) -> {
-            // TODO 3. retrieve storage, throw ServiceException if not found
-            // TODO 4. if storage is found, link it to the evidence and add evidence to the case
-        });
+  @Override
+  public CriminalCase createCriminalCase(CaseType caseType, String shortDescription, String badgeNo,
+      Map<Evidence, String> evidenceMap) {
 
-        // TODO 5. save the criminal case instance
-        return criminalCase;
-    }
+    // get detective
+    var detectiveOpt = detectiveRepo.findByBadgeNumber(badgeNo);
 
-    @Override
-    public Optional<CriminalCase> assignLeadInvestigator(String caseNumber, String leadDetectiveBadgeNo) {
-        throw new NotImplementedException("Not needed for this section.");
-    }
+    // create a criminal case instance
+    CriminalCase criminalCase = new CriminalCase();
+    criminalCase.setShortDescription(shortDescription);
+    criminalCase.setType(caseType);
 
-    @Override
-    public Optional<CriminalCase> linkEvidence(String caseNumber, List<Evidence> evidenceList) {
-        throw new NotImplementedException("Not needed for this section.");
-    }
+    // set fields; use ifPresent(..) to set(or not) the leadDetective field
+    detectiveOpt.ifPresent(new Consumer<Detective>() {
+      @Override
+      public void accept(Detective leadInvestigator) {
+        criminalCase.setLeadInvestigator(leadInvestigator);
+      }
+    });
+    evidenceMap.forEach((ev, storageName) -> {
+      // 3. retrieve storage, throw ServiceException if not found
+      var storageOpt = storageRepo.findByName(storageName);
 
-    @Override
-    public boolean solveCase(String caseNumber, String reason) {
-        throw new NotImplementedException("Not needed for this section.");
-    }
+      // 4. if storage is found, link it to the evidence and add evidence to the case
+      if(storageOpt.isPresent()) {
+        ev.setStorage(ev.getStorage());
+        criminalCase.addEvidence(ev);
+        evidenceRepo.save(ev);
+      } else {
+        throw new ServiceException("Evidence storage could not be found in the system.");
+      }
+    });
 
-    @Override
-    public Set<Detective> getAssignedTeam(String caseNumber) {
-        throw new NotImplementedException("Not needed for this section.");
-    }
+    // 5. save the criminal case instance
+    criminalCaseRepo.save(criminalCase);
+    return criminalCase;
+  }
 
-    //setters
-    @Override
-    public void setCriminalCaseRepo(CriminalCaseRepo criminalCaseRepo) {
-        this.criminalCaseRepo = criminalCaseRepo;
-    }
+  @Override
+  public Optional<CriminalCase> assignLeadInvestigator(String caseNumber,
+      String leadDetectiveBadgeNo) {
+    throw new NotImplementedException("Not needed for this section.");
+  }
 
-    @Override
-    public void setEvidenceRepo(EvidenceRepo evidenceRepo) {
-        this.evidenceRepo = evidenceRepo;
-    }
+  @Override
+  public Optional<CriminalCase> linkEvidence(String caseNumber, List<Evidence> evidenceList) {
+    throw new NotImplementedException("Not needed for this section.");
+  }
 
-    @Override
-    public void setDetectiveRepo(DetectiveRepo detectiveRepo) {
-        this.detectiveRepo = detectiveRepo;
-    }
+  @Override
+  public boolean solveCase(String caseNumber, String reason) {
+    throw new NotImplementedException("Not needed for this section.");
+  }
 
-    @Override
-    public void setStorageRepo(StorageRepo storageRepo) {
-        this.storageRepo = storageRepo;
-    }
+  @Override
+  public Set<Detective> getAssignedTeam(String caseNumber) {
+    throw new NotImplementedException("Not needed for this section.");
+  }
+
+  //setters
+  @Override
+  public void setCriminalCaseRepo(CriminalCaseRepo criminalCaseRepo) {
+    this.criminalCaseRepo = criminalCaseRepo;
+  }
+
+  @Override
+  public void setEvidenceRepo(EvidenceRepo evidenceRepo) {
+    this.evidenceRepo = evidenceRepo;
+  }
+
+  @Override
+  public void setDetectiveRepo(DetectiveRepo detectiveRepo) {
+    this.detectiveRepo = detectiveRepo;
+  }
+
+  @Override
+  public void setStorageRepo(StorageRepo storageRepo) {
+    this.storageRepo = storageRepo;
+  }
 }

@@ -146,6 +146,7 @@ public class SimpleOperationsService implements OperationsService {
 
     @Override
     public void setEvidenceRepo(EvidenceRepo evidenceRepo) {
+
         this.evidenceRepo = evidenceRepo;
     }
 
