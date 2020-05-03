@@ -58,18 +58,18 @@ public class SimpleOperationsService implements OperationsService {
   @Override
   public Detective createDetective(String firstName, String lastName, LocalDateTime hiringDate,
       Rank rank) {
-    Person person = new Person();
-    person.setFirstName(firstName);
-    person.setLastName(lastName);
-    person.setHiringDate(hiringDate);
-    person.setPassword(NumberGenerator.getPassword());
-
+//    Person person = new Person();
+//    person.setFirstName(firstName);
+//    person.setLastName(lastName);
+//    person.setHiringDate(hiringDate);
+//    person.setPassword(NumberGenerator.getPassword());
+//
     Detective detective = new Detective();
-    detective.setPerson(person);
-    detective.setBadgeNumber(NumberGenerator.getBadgeNumber());
-    detective.setRank(rank);
-    detectiveRepo.save(detective);
-    return detective;
+//    detective.setPerson(person);
+//    detective.setBadgeNumber(NumberGenerator.getBadgeNumber());
+//    detective.setRank(rank);
+//    detectiveRepo.save(detective);
+    return null;
   }
 
   @Override

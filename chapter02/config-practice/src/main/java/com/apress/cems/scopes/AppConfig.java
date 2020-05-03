@@ -27,6 +27,7 @@ SOFTWARE.
 */
 package com.apress.cems.scopes;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
@@ -35,6 +36,13 @@ import org.springframework.context.annotation.Configuration;
  * @since 1.0
  */
 @Configuration
-@ComponentScan(basePackages = {"com.apress.cems.scopes"} )
+@ComponentScan(basePackages = {"com.apress.cems.scopes"})
 public class AppConfig {
+
+    @Bean
+    @SalaryScope
+    SalaryI salaryI() {
+        return new Salary() {
+        };
+    }
 }
